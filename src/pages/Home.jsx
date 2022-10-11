@@ -1,17 +1,16 @@
 import React from "react";
-// import Button from 'react-bootstrap/Button';
-// import Card from 'react-bootstrap/Card';
-// import Placeholder from 'react-bootstrap/Placeholder';
-import Header from "../components/Header/Header"
-import Footer from "../components/Footer/Footer"
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
 import "./Home.css";
-import Modal from "../components/Modal/Modal"
+import Modal from "../components/Modal/Modal";
 import Profile from "../components/Profile/Profile";
 const Home = () => {
   return (
     <div>
-      <div><Header/></div>
-      <Profile/>
+      
+        <Header />
+      
+      <Profile />
       <section class="gallery min-vh-100">
         <div class="container-lg">
           <div class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-md-3">
@@ -20,11 +19,10 @@ const Home = () => {
                 src="./Image/mate1.png"
                 class="gallery-item"
                 alt="gallery"
-                data-bs-toggle = "modal"
-                data-bs-target ="#imageExample"
-                
+                data-bs-toggle="modal"
+                data-bs-target="#imageExample"
               ></img>
-              <Modal/>
+              <Modal />
             </div>
             <div class="col">
               <img
@@ -64,9 +62,10 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <div><Footer/></div>
+      <div>
+        <Footer />
+      </div>
     </div>
-    
   );
 };
 
