@@ -54,9 +54,10 @@ const ModalWallet = () => {
     addDoc(nftCollection, metadata)
       .then((response) => {
         console.log(response);
+        
       })
       .catch((error) => {
-        console.log(error.message);
+        console.log(error.mesage);
       });
   }
   async function pullJson(url) {
@@ -64,7 +65,8 @@ const ModalWallet = () => {
     const response = await fetch(request);
     const metadata = await response.json();
 
-    metadata.owner = auth.currentUser.uid;
+    // metadata.owner = auth.currentUser.uid;
+    metadata.owner = "Kl1d3KB5YghEzKoUY7iW1IAuPw42";
     metadata.createdOn = Date.now();
 
     addNFT(metadata);
@@ -103,7 +105,7 @@ const ModalWallet = () => {
     if (!values.Address) {
       errors.Address = "Token address is required!";
     } else if (!regex.test(values.Address)) {
-      errors.Address = "This is not a valid Address format!";
+      errors.Address = "This is not a valid Address format!"
     }
     if (!values.TokenID) {
       errors.TokenID = "Token id is required";
@@ -120,7 +122,7 @@ const ModalWallet = () => {
         <div className="ui form">
           <Form.Group className="field">
             <label>Address</label>
-            <br />
+            
             <Form.Control
               type="text"
               name="Address"
@@ -141,7 +143,7 @@ const ModalWallet = () => {
             />
           </Form.Group>
           <p>{formErrors.TokenID}</p>
-          <button className="fluid ui button blue">Submit</button>
+          <button className="fluid ui buttonSubmit blue">Submit</button>
         </div>
       </Form>
     </div>

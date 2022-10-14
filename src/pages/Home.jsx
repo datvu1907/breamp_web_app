@@ -31,9 +31,14 @@ const Home = () => {
       queryData,
       { includeMetadataChanges: true },
       (snapshot) => {
-        console.log(snapshot.docs);
-        setNft(snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() })));
-        console.log(nft[0].data.image);
+        snapshot.docs.sort((a , b ) => b.data.createdOn - a.data.createdOn);
+       
+        // console.log(snapshot.docs);
+        const temp = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+        temp.sort((a , b ) => b.data.createdOn - a.data.createdOn);
+        console.log(temp);
+        setNft(temp);
+        // console.log(nft[0].data.image);
       }
     );
     return () => {
