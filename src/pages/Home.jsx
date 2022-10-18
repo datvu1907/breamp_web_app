@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import "./Home.css";
@@ -12,44 +12,67 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { nftCollectionRef } from "../api/firestore-collection";
-import { database } from "../firebase";
+import { auth, AuthContext, signInWithTwitter } from "../firebase";
 
 const InitialState = {
   img: " ",
 };
 
+const token = localStorage.getItem("token");
+
 const Home = () => {
+  const [status, checkStatus] = useState(auth.currentUser);
   const [nft, setNft] = useState([]);
+  // const [currentUser] = useContext(AuthContext);
+  // console.log("sdsdad" , currentUser);
+
+  const handleOnClickLogin = () => {
+    signInWithTwitter();
+  };
+
   useEffect(() => {
     // console.log(user.id);
+    console.log("AAAA", status);
+    if (auth.currentUser != null) {
+      const queryData = query(
+        nftCollectionRef,
+        where("owner", "==", status.uid)
+      );
+      const unsubscribe = onSnapshot(
+        queryData,
+        { includeMetadataChanges: true },
+        (snapshot) => {
+          snapshot.docs.sort((a, b) => b.data.createdOn - a.data.createdOn);
 
-    const queryData = query(
-      nftCollectionRef,
-      where("owner", "==", "Kl1d3KB5YghEzKoUY7iW1IAuPw42")
-    );
-    const unsubscribe = onSnapshot(
-      queryData,
-      { includeMetadataChanges: true },
-      (snapshot) => {
-        snapshot.docs.sort((a , b ) => b.data.createdOn - a.data.createdOn);
-       
-        // console.log(snapshot.docs);
-        const temp = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
-        temp.sort((a , b ) => b.data.createdOn - a.data.createdOn);
-        console.log(temp);
-        setNft(temp);
-        // console.log(nft[0].data.image);
-      }
-    );
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+          // console.log(snapshot.docs);
+          const temp = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }));
+          temp.sort((a, b) => b.data.createdOn - a.data.createdOn);
+
+          setNft(temp);
+          // console.log(nft[0].data.image);
+        }
+      );
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (token !== undefined) {
+      console.log(token);
+    }
+  }, [token]);
+
   return (
     <div>
-      <Header />
+      <Header handleOnClickLogin={handleOnClickLogin} />
 
       <Profile />
+
       <section class="gallery min-vh-100">
         <div class="container-lg">
           <div class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-md-3">

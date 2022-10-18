@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ModalWallet.css";
 import { Form, Button } from "react-bootstrap";
 import { auth, database } from "../../firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { getDocs, addDoc, collection, query, where } from "firebase/firestore";
 const Web3 = require("web3");
 const web3 = new Web3(process.env.RPC_URL);
 const caver = new Web3(
@@ -49,16 +49,29 @@ const ModalWallet = () => {
       type: "function",
     },
   ];
-  function addNFT(metadata) {
+  async function addNFT(metadata) {
     const nftCollection = collection(database, "collectionNFT");
-    addDoc(nftCollection, metadata)
-      .then((response) => {
-        console.log(response);
-        
-      })
-      .catch((error) => {
-        console.log(error.mesage);
-      });
+    const ownerQuery = query(
+      nftCollection,
+      where("owner", "==", metadata.owner)
+    );
+    const addressQuery = query(
+      ownerQuery,
+      where("address", "==", metadata.address)
+    );
+    const idQuery = query(addressQuery, where("id", "==", metadata.id));
+    const querySnapshot = await getDocs(idQuery);
+    if (querySnapshot.docs.length > 0) {
+      console.log(" NFT is exits");
+    } else {
+      addDoc(nftCollection, metadata)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error.mesage);
+        });
+    }
   }
   async function pullJson(url) {
     const request = new Request(url);
@@ -66,10 +79,15 @@ const ModalWallet = () => {
     const metadata = await response.json();
 
     // metadata.owner = auth.currentUser.uid;
-    metadata.owner = "Kl1d3KB5YghEzKoUY7iW1IAuPw42";
-    metadata.createdOn = Date.now();
+    const object = {
+      address: formValues.Address,
+      id: formValues.TokenID,
+      image: metadata.image,
+      owner: auth.currentUser.uid,
+      createdOn: Date.now(),
+    };
 
-    addNFT(metadata);
+    addNFT(object);
   }
 
   async function getNFTMetadata() {
@@ -105,7 +123,7 @@ const ModalWallet = () => {
     if (!values.Address) {
       errors.Address = "Token address is required!";
     } else if (!regex.test(values.Address)) {
-      errors.Address = "This is not a valid Address format!"
+      errors.Address = "This is not a valid Address format!";
     }
     if (!values.TokenID) {
       errors.TokenID = "Token id is required";
@@ -122,7 +140,7 @@ const ModalWallet = () => {
         <div className="ui form">
           <Form.Group className="field">
             <label>Address</label>
-            
+
             <Form.Control
               type="text"
               name="Address"

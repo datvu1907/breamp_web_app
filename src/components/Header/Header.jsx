@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { MdOutlineLibraryAdd } from "react-icons/md";
-import { signInWithTwitter } from "../../firebase";
+
+import { auth, logOut } from "../../firebase";
 // import { ethers } from "ethers";
 import DSCBook from "../../data/DSCBook.json";
 import "./Header.css";
@@ -14,11 +14,12 @@ const caver = new Web3(
   )
 );
 
-const Header = () => {
+const Header = (props) => {
+  const {handleOnClickLogin} = props;
   // const isConnected = Boolean(accounts[0])
   const [accounts, setAccounts] = useState([0]);
   const isConnected = Boolean(accounts[0]);
-  const [isLogin, setIsLogin] = useState(false);
+
 
   async function handleSubmit() {
     const chainId = 8217; // Klaytn Testnet
@@ -68,11 +69,11 @@ const Header = () => {
           alt=""
         ></img>
         <div className="app__headerWrapper">
-          {!isLogin ? (
+          {auth.currentUser == null ? (
             <button
               class="primary__button btn btn-primary"
               onClick={() => {
-                signInWithTwitter(setIsLogin);
+                handleOnClickLogin();
               }}
             >
               Sign in Twitter
@@ -93,13 +94,47 @@ const Header = () => {
                     Connect Wallet
                   </button>
                 )}
-                <img
-                  src={localStorage.getItem("profilePic")}
-                  alt="mdo"
-                  width="32"
-                  height="32"
-                  class="rounded-circle"
-                />
+                <div class="dropdown text-end">
+                  <div
+                    href="#"
+                    class="d-block link-dark text-decoration-none dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <img
+                      src={localStorage.getItem("profilePic")}
+                      alt="mdo"
+                      width="32"
+                      height="32"
+                      class="rounded-circle"
+                    />
+                  </div>
+                  <ul class="dropdown-menu text-small">
+                    <li>
+                      <a class="dropdown-item" href="#">
+                        New project...
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="#">
+                        Settings
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="#">
+                        Profile
+                      </a>
+                    </li>
+                    <li>
+                      <hr class="dropdown-divider"></hr>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" onClick={()=> {logOut()}}>
+                        Sign out
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </>
           )}
